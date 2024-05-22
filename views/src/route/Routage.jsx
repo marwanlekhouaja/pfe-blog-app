@@ -5,6 +5,8 @@ import Profile from '../components/user/Profile'
 import DashboardAdmin from '../admin/DashboardAdmin'
 import Login from '../components/user/Login'
 import NotFound from '../components/NotFound'
+import Register from '../components/user/Register'
+import SearchPost from '../components/post/SearchPost'
 const route=createBrowserRouter([
     {
         path:'/dashboard',
@@ -21,7 +23,17 @@ const route=createBrowserRouter([
     },{
       path:'/admin/dashboard',
       element:<DashboardAdmin />
-    },{
+    },
+    {
+      path:'/register',
+      element:<Register />
+
+    },
+    {
+      path:'/search/?q=:value',
+      element:<SearchPost />
+    },
+    {
       path:'*',
       element:<NotFound />
     }

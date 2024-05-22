@@ -5,6 +5,7 @@ import {yupResolver} from '@hookform/resolvers/yup'
 import {toast,Toaster} from 'sonner'
 import { useNavigate } from "react-router-dom";
 import { axiosClient } from "../../api/axios";
+import { useEffect, useState } from "react";
 
 const schema=yup.object({
     title:yup.string().required().min(3),
@@ -12,13 +13,18 @@ const schema=yup.object({
 })
 const Create = () => {
     const navigate=useNavigate()
+    const [user,setUser]=useState([])
     const {register,handleSubmit,formState:{errors,isSubmitting}}=useForm({
         mode:'onTouched',
         resolver:yupResolver(schema)
     })
 
+    useEffect(()=>{
+        axiosClient.get('/api/user').then(data=>setUser(data.data))
+    },[])
+
     const createBlog=async (data)=>{
-        const blog={...data,image:data.image[0].name,creatorId:3}
+        const blog={...data,image:data.image[0],creatorId:user.id}
         try{
             const res=await axiosClient.post('/api/blog',blog);
             if(res.status==200){
@@ -37,7 +43,7 @@ const Create = () => {
     return (
         <div style={{height:'90vh'}} className="d-flex justify-content-center align-items-center">
             <Toaster richColors position="top-center" duration={1300} />
-            <form action="" onSubmit={handleSubmit(createBlog)} className=" p-2 m-auto shadow w-50 rounded"  >
+            <form action="" onSubmit={handleSubmit(createBlog)} encType="multipart/form-data" className=" p-2 m-auto shadow w-50 rounded"  >
                 <h2 className="text-center font-mono">Create your own blog</h2>
                 title
                 <input className="form-control" type="text" {...register('title')} />

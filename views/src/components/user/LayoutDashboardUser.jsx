@@ -1,18 +1,59 @@
-import { Link } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
+import {  useContext, useEffect, useState } from "react";
+import { Link, useNavigate, } from "react-router-dom";
+import { axiosClient } from "../../api/axios";
+import { toast } from "sonner";
+import { UserStateContext } from "../../context/UserContext";
 
 const LayoutDashboardUser = () => {
+    const navigate=useNavigate()
+    const context=useContext(UserStateContext)
+    const [user,setUser]=useState([])
+    const [searchValue,setSearchValue]=useState('')
+    const logout=async ()=>{
+        const response=await axiosClient.post('/logout')
+        if(response.status===204){
+            toast.info('you are logout right now !')
+            context.authenticated==false
+            context.setAuthenticated==false
+            setTimeout(()=>{
+                navigate('/')
+            },1000)
+        }
+    }
+
+    useEffect(() => {
+        axiosClient
+            .get("/api/user")
+            .then((data) => setUser(data.data))
+    //    if(!context.authenticated){
+    //     navigate('/')
+    //    }
+    }, []);
     return (
         <>
-            <div className="d-flex justify-content-between align-items-center m-2">
-                <div>
-                    <form action="/search" className="d-flex align-items-center" method="get">
-                        <img src="/logo.png" width={50} height={50} alt="" />
+            <div style={{position:'fixed',width:'100%',zIndex:'999',backgroundColor:'white',marginTop:'-2.3%',marginBottom:'80px'}} className="d-flex p-3 justify-content-between  align-items-center ">
+                <nav>
+                    <form
+                        action={`/search/?${searchValue}`}
+                        className="d-flex align-items-center"
+                    >
+                        <Link to="/dashboard">
+                            <img
+                                src="/logo.png"
+                                loading="lazy"
+                                width={50}
+                                height={50}
+                                alt=""
+                            />
+                        </Link>
                         <input
                             type="search"
-                            className="form-control "
-                            placeholder="search for somthing ..."
+                            onChange={e=>setSearchValue(e.target.value)}
+                            className="bg-light p-1 rounded-lg focus:border-gra"
+                            placeholder="search for something ..."
                         />
-                        <button type="submit" className="btn btn-dark ms-1 p-2">
+                        <button type="submit" className="btn btn-dark ms-1 ">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -25,7 +66,7 @@ const LayoutDashboardUser = () => {
                             </svg>
                         </button>
                     </form>
-                </div>
+                </nav>
                 <div className="d-flex align-items-center">
                     <Link
                         to="/blog/create"
@@ -44,16 +85,19 @@ const LayoutDashboardUser = () => {
                         </svg>
                         <span>write</span>
                     </Link>
-                    <Link to={`/marwan/profile`}>
+                    <Link to={`/${user.name}/profile`} >
                         <img
                             style={{ borderRadius: "50%" }}
                             src="/aucun_photo.png"
+                            loading="lazy"
                             width={50}
                             height={100}
                             className=""
                             alt="pic"
                         />
                     </Link>
+                    <button onClick={logout} className="btn btn-dark ms-2">logout</button>
+
                 </div>
             </div>
             <hr />

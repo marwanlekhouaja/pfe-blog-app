@@ -15,7 +15,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return response()->json(Blog::with('user')->get(),200);
+        return response()->json(Blog::with('user')->with('comments')->latest()->get(),200);
     }
 
     /**
@@ -27,7 +27,7 @@ class BlogController extends Controller
         $request->validate([
             'title'=>'required|min:3',
             "body"=>'required|min:3',
-            "image"=>'nullable',
+            "image"=>'file|mimes:png,jpg,jpeg',
             'creatorId'=>'required'
         ]);
         

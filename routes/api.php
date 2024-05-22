@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\api\BlogController;
 use App\Http\Controllers\api\UserController;
+use App\Http\Controllers\api\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,5 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::apiResource('users',UserController::class);
 Route::apiResource('blog',BlogController::class);
+Route::apiResource('commentaire',CommentController::class);
+Route::get('commentaire/show',[CommentController::class,'getSpecificComments']);
