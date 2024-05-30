@@ -16,6 +16,7 @@ const LayoutDashboardUser = () => {
             toast.info('you are logout right now !')
             context.authenticated==false
             context.setAuthenticated==false
+            window.localStorage.removeItem('ACCESS_TOKEN')
             setTimeout(()=>{
                 navigate('/')
             },1000)
@@ -23,19 +24,24 @@ const LayoutDashboardUser = () => {
     }
 
     useEffect(() => {
-        axiosClient
-            .get("/api/user")
-            .then((data) => setUser(data.data))
-    //    if(!context.authenticated){
-    //     navigate('/')
-    //    }
+        const fetchDataUser=async ()=>{
+            const res=await axiosClient.get('/api/user')
+            if(res.status ===401){
+                navigate('/')
+            }
+            else{
+                setUser(res.data)
+            }
+        }
+        fetchDataUser()
+   
     }, []);
     return (
         <>
-            <div style={{position:'fixed',width:'100%',zIndex:'999',backgroundColor:'white',marginTop:'-2.3%',marginBottom:'80px'}} className="d-flex p-3 justify-content-between  align-items-center ">
+            <div style={{position:'fixed',width:'100%',zIndex:'999',backgroundColor:'white',marginTop:'-1.2%',marginBottom:'120px'}} className="d-flex p-3 justify-content-between  align-items-center ">
                 <nav>
                     <form
-                        action={`/search/?${searchValue}`}
+                        action={`/search/${searchValue}`}
                         className="d-flex align-items-center"
                     >
                         <Link to="/dashboard">
@@ -96,7 +102,7 @@ const LayoutDashboardUser = () => {
                             alt="pic"
                         />
                     </Link>
-                    <button onClick={logout} className="btn btn-dark ms-2">logout</button>
+                    <button onClick={logout} className="btn btn-light ms-2"><i className="bi bi-box-arrow-right"></i></button>
 
                 </div>
             </div>

@@ -15,7 +15,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return response()->json(Blog::with('user')->with('comments')->latest()->get(),200);
+        return response()->json(Blog::with('user')->with('comments')->with('category')->latest()->get(),200);
     }
 
     /**
@@ -28,7 +28,8 @@ class BlogController extends Controller
             'title'=>'required|min:3',
             "body"=>'required|min:3',
             "image"=>'file|mimes:png,jpg,jpeg',
-            'creatorId'=>'required'
+            'creatorId'=>'required',
+            'categoryId'=>'required'
         ]);
         
         if($request->hasFile('image')){
@@ -38,7 +39,8 @@ class BlogController extends Controller
             'title'=>$request->title,
             'body'=>$request->body,
             'image'=>$request->hasFile('image')?$imageName:null,
-            'creatorId'=>$request->creatorId
+            'creatorId'=>$request->creatorId,
+            'categoryId'=>$request->categoryId
         ]);
         if($request->hasFile('image')){
             Storage::disk('public')->put($imageName,file_get_contents($request->image));
@@ -72,5 +74,30 @@ class BlogController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getPostsUserAuthentified(Request $request){
+        return response()->json(Blog::with('category')->with('user')->where('creatorId',$request->id)->get(),200);
+    }
+
+    public function search(Request $request){
+        try{
+            $result = Blog::with('user')->with('category')->where('title', 'LIKE', '%' . $request->search . '%')->get();
+            if($result){
+                return response()->json($result,200);
+            }
+            else{
+                return response()->json(['message'=>'not found'],404);
+            }
+        }
+        catch (\Exception $e){
+            return response()->json(['message'=> 'somthing is wrong '.$e],500);
+        } 
+    }
+
+    public function filterBlogsByCategory(Request $request){
+        return response()->json(Blog::with('category',function ($query) use($request){
+            $query->where('type',$request->category);
+        })->with('user')->get(),200);
     }
 }

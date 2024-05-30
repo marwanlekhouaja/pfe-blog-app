@@ -1,12 +1,13 @@
 import {RouterProvider, createBrowserRouter} from 'react-router-dom'
-import Dashboard from '../components/user/Dashboard'
 import Create from '../components/post/Create'
 import Profile from '../components/user/Profile'
-import DashboardAdmin from '../admin/DashboardAdmin'
+import DashboardAdmin from '../pages/admin/DashboardAdmin'
 import Login from '../components/user/Login'
 import NotFound from '../components/NotFound'
 import Register from '../components/user/Register'
 import SearchPost from '../components/post/SearchPost'
+import Dashboard from '../pages/user/Dashboard'
+import FilterBlogsByCategory from '../components/category/FilterBlogsByCategory'
 const route=createBrowserRouter([
     {
         path:'/dashboard',
@@ -30,12 +31,16 @@ const route=createBrowserRouter([
 
     },
     {
-      path:'/search/?q=:value',
+      path:'/search/:search',
       element:<SearchPost />
     },
     {
       path:'*',
       element:<NotFound />
+    },
+    {
+      element:<FilterBlogsByCategory />,
+      path:'/category/:name'
     }
 ])
 

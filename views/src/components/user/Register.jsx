@@ -18,6 +18,7 @@ const Register = () => {
     const {
         register,
         handleSubmit,
+        setError,
         formState: { errors, isSubmitting },
     } = useForm({
         mode: "onTouched",
@@ -26,13 +27,20 @@ const Register = () => {
 
     const createAccount = async (data) => {
         try {
-            await axiosClient.get("/sanctum/csrf-cookie");
-            const res = await axiosClient.post("/register", data);
-            if (res.status === 204) {
+            // await axiosClient.get("/sanctum/csrf-cookie");
+            if(data.password_confirmation == data.password){
+                const res = await axiosClient.post("/register", data);
+                if (res.status === 204) {
                 toast.success("account created successfully !");
                 setTimeout(() => {
                     navigate("/dashboard");
                 }, 2000);
+            }
+            }
+            else{
+                setError('password_confirmation',{
+                    message:'password is not matched'
+                })
             }
         } catch (error) {
             console.log("error store data because " + error);

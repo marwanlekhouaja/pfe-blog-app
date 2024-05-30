@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Commentaire;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
-class CommentController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Commentaire::with('user')->get(); 
+        return response()->json(Category::select('type')->distinct()->get(), 200);
     }
 
     /**
@@ -21,18 +21,7 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        try{
-            Commentaire::create([
-                'blog_id'=>$request->blog_id,
-                'user_id'=>$request->user_id,
-                'comment'=>$request->comment
-            ]);
-
-            return response()->json(['message'=>'comment created successfully',201]);
-        }
-        catch (\Exception $e){
-            return response()->json(['message'=>'failed to create comment because '.$e]);
-        }
+        //
     }
 
     /**
@@ -57,9 +46,5 @@ class CommentController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    public function getSpecificComments(){
-        return response()->json(['fullname'=>'marwan lk']);
     }
 }
