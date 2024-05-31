@@ -42,18 +42,6 @@ const Create = () => {
     const createBlog = async (data) => {
 
         let blog={...data,image:data.image[0],creatorId:user.id} 
-
-        // const formData = new FormData();
-        // formData.append('title', data.title);
-        // formData.append('body', data.body);
-        // formData.append('creatorId', user.id);
-        // formData.append('categoryId',data.categoryId)
-        // if (data.image[0]) {
-        //     formData.append('image', data.image[0]);
-        // }
-
-        // console.log(blog)
-
         try {
             const res = await axiosClient.post('/api/blog', blog, {
             headers: {

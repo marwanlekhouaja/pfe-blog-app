@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { axiosClient } from "../../api/axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LayoutDashboardUser from "./LayoutDashboardUser";
-import { UserStateContext } from "../../context/UserContext";
 import PostsUser from "./PostsUser";
 
 const Profile = () => {
   const [user,setUser]=useState([])
   const [userId,setUserId]=useState(null)
-  const navigate=useNavigate()
-  const context=useContext(UserStateContext)
   useEffect(() => {
     axiosClient
         .get("/api/user")

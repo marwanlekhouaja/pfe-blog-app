@@ -1,21 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {  useContext, useEffect, useState } from "react";
+import {   useEffect, useState } from "react";
 import { Link, useNavigate, } from "react-router-dom";
 import { axiosClient } from "../../api/axios";
 import { toast } from "sonner";
-import { UserStateContext } from "../../context/UserContext";
 
 const LayoutDashboardUser = () => {
     const navigate=useNavigate()
-    const context=useContext(UserStateContext)
     const [user,setUser]=useState([])
     const [searchValue,setSearchValue]=useState('')
     const logout=async ()=>{
         const response=await axiosClient.post('/logout')
         if(response.status===204){
             toast.info('you are logout right now !')
-            context.authenticated==false
-            context.setAuthenticated==false
+            // context.authenticated==false
+            // context.setAuthenticated==false
             window.localStorage.removeItem('ACCESS_TOKEN')
             setTimeout(()=>{
                 navigate('/')

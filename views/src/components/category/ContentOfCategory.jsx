@@ -1,35 +1,12 @@
-import { useParams } from "react-router-dom";
-import LayoutDashboardUser from "../user/LayoutDashboardUser";
-import { useEffect, useState } from "react";
-import { axiosClient } from "../../api/axios";
+import LayoutDashboardUser from "../user/LayoutDashboardUser"
 
-const SearchPost = () => {
-    const { search } = useParams();
-    const [blogs, setBlogs] = useState([]);
-
-    useEffect(() => {
-        const fetchBlogsOfSearch = async () => {
-            const res = await axiosClient.get(`api/blogs/${search}`);
-            if (res.status == 200) {
-               setBlogs(res.data)
-            } else {
-                console.log("failed to fetch data from search !");
-            }
-        };
-        fetchBlogsOfSearch();
-    },[]);
-
-    return (
-        <div>
-            <LayoutDashboardUser />
-            <div className="mt-5 pt-3 container">
-                <h2
-                    style={{ fontFamily: "monospace" }}
-                    className="text-center mt-5"
-                >
-                    Blogs about {search}
-                </h2>
-                {blogs.length!==0?blogs.map((blog) => (
+// eslint-disable-next-line react/prop-types
+const ContentOfCategory = ({blogs}) => {
+  return (
+    <div>
+        <LayoutDashboardUser />
+         {/* eslint-disable-next-line react/prop-types */}
+        {blogs.length!==0?blogs.map((blog) => (
                     <div key={blog.id} className="rounded card shadow m-2 p-2">
                         <p className="text-secondary d-flex align-items-center">
                             <img
@@ -76,23 +53,11 @@ const SearchPost = () => {
                                 </p>
                             </div>
                         )}
-                        <div className="actions d-flex align-items-center m-2  justify-content-between">
-                            <div>
-                                <span className="bg-secondary text-light p-2 rounded-pill me-2">
-                                    {blog.category.type}
-                                </span>
-                                <span className="bg-secondary text-light p-2 rounded-pill">
-                                    {blog.category.name}
-                                </span>
-                            </div>
-                        </div>
-
                     </div>
                 )):
                 <div className="text-center mt-4">blogs not found in this topic !</div>}
-            </div>
-        </div>
-    );
-};
+    </div>
+  )
+}
 
-export default SearchPost;
+export default ContentOfCategory

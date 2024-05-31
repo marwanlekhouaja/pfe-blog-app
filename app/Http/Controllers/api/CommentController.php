@@ -28,7 +28,7 @@ class CommentController extends Controller
                 'comment'=>$request->comment
             ]);
 
-            return response()->json(['message'=>'comment created successfully',201]);
+            return response()->json(['message'=>'comment created successfully'],201);
         }
         catch (\Exception $e){
             return response()->json(['message'=>'failed to create comment because '.$e]);

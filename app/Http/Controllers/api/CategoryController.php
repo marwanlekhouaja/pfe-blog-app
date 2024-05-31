@@ -13,6 +13,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        return response()->json(Category::all(), 200);
+    }
+
+    public function listCategories(){
         return response()->json(Category::select('type')->distinct()->get(), 200);
     }
 

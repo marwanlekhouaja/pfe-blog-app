@@ -5,9 +5,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import "bootstrap/dist/css/bootstrap.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
 // import { axiosClient } from "../../api/axios";
-import { UserStateContext } from "../../context/UserContext";
 import { axiosClient } from "../../api/axios";
 
 const schema = yup.object({
@@ -17,7 +15,6 @@ const schema = yup.object({
 
 const Login = () => {
     const navigate = useNavigate();
-    const context = useContext(UserStateContext);
 
     // useEffect(()=>{
     //     if(window.localStorage.getItem('ACCESS_TOKEN')) {
@@ -42,8 +39,7 @@ const Login = () => {
             const response = await axiosClient.post("/login", data);
             // Handle response
             if (response.status === 204) {
-                context.authenticated == true;
-                context.setAuthenticated == true;
+  
                 setTimeout(() => {
                     toast.success("login successfully !");
                     window.localStorage.setItem('ACCESS_TOKEN','isdkikkuwsusad')

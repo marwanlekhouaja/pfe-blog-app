@@ -96,7 +96,7 @@ class BlogController extends Controller
     }
 
     public function filterBlogsByCategory(Request $request){
-        return response()->json(Blog::with('category',function ($query) use($request){
+        return response()->json(Blog::whereHas('category',function ($query) use ($request){
             $query->where('type',$request->category);
         })->with('user')->get(),200);
     }
