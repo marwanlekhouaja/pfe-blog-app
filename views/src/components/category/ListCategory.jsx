@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { axiosClient } from "../../api/axios";
 import { Link } from "react-router-dom";
-
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 const ListCategory = () => {
     const [categories, setCategories] = useState([]);
     useEffect(() => {
@@ -12,6 +13,8 @@ const ListCategory = () => {
             }
         };
         fetchCategories();
+        AOS.init()
+        
     }, []);
     return (
         <>
@@ -20,8 +23,9 @@ const ListCategory = () => {
                 {categories.map((category, index) => (
                     <div
                         key={index}
-                        style={{ height: "40px" }}
-                        className="bg-light rounded-pill text-center  p-2 m-2"
+                        data-aos="fade-left"
+                        style={{ height: "40px",backgroundColor:'white' }}
+                        className="rounded-pill shadow text-center  p-2 m-2"
                     >
                         <Link
                             className="text-dark text-decoration-none"

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Blog;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -29,7 +32,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return response()->json(User::find($id)->blogs,200);
     }
 
     /**
@@ -37,7 +40,32 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        try{
+            // $request->validate([
+            //     'name'=>'required|min:3',
+            //     "email"=>'required|min:3',
+            //     "image"=>'file|mimes:png,jpg,jpeg',
+            //     'bio'=>'',
+            // ]);
+            
+            if($request->hasFile('image')){
+                $imageName=Str::random(32).".".$request->image->getClientOriginalExtension();
+            }
+            User::find($id)->update([
+                'name'=>$request->name,
+                'email'=>$request->email,
+                'image'=>$request->hasFile('image')?$imageName:null,
+                'bio'=>$request->bio,
+            ]);
+            if($request->hasFile('image')){
+                Storage::disk('public')->put($imageName,file_get_contents($request->image));
+            };
+            return response()->json(['message'=>'blog created successfully !'],200);
+           }
+           catch(\Exception $e){
+            return response()->json(['message'=>'somthing is wrong because '.$e],500);
+           }
     }
 
     /**

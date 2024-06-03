@@ -24,10 +24,9 @@ const PageSearch = () => {
     return (
         <div>
             <LayoutDashboardUser />
-            <div className="mt-5 pt-3 container">
+            <div className="mt-2 pt-3 container">
                 <h1
                     style={{ fontFamily: "monospace" }}
-                    className="mt-5"
                 >
                    <span className="text-secondary mb-3">Results for </span>  {search}
                 </h1>

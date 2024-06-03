@@ -7,6 +7,7 @@ use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Commentaire;
 
 class BlogController extends Controller
 {
@@ -55,9 +56,9 @@ class BlogController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $name)
     {
-        //
+        return response()->json(Blog::with('user')->with('comments')->where('title',$name)->get(),200); 
     }
 
     /**
@@ -99,5 +100,15 @@ class BlogController extends Controller
         return response()->json(Blog::whereHas('category',function ($query) use ($request){
             $query->where('type',$request->category);
         })->with('user')->get(),200);
+    }
+
+    public function getCommentsOfSpecificBlog(Request $request){
+        $comments=Commentaire::where('blog_id',$request->idblog)->get();
+        if(count($comments)>0){
+            return response()->json($comments,200);
+        }
+        else{
+            return response()->json(['message'=> 'no comments found in this blog'],404);
+        }
     }
 }

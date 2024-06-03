@@ -1,5 +1,5 @@
 import {RouterProvider, createBrowserRouter} from 'react-router-dom'
-import Create from '../components/post/Create'
+import Create from '../components/blog/Create'
 import Profile from '../components/user/Profile'
 import DashboardAdmin from '../pages/admin/DashboardAdmin'
 import Login from '../pages/user/Login'
@@ -8,6 +8,7 @@ import Register from '../pages/user/Register'
 import SearchPost from '../pages/PageSearch'
 import Dashboard from '../pages/user/Dashboard'
 import FilterBlogsByCategory from '../components/category/FilterBlogsByCategory'
+import DetailBlog from '../components/blog/DetailBlog'
 const route=createBrowserRouter([
     {
         path:'/dashboard',
@@ -41,6 +42,10 @@ const route=createBrowserRouter([
     {
       element:<FilterBlogsByCategory />,
       path:'/category/:name'
+    },
+    {
+      element:<DetailBlog />,
+      path:'/blog/:name'
     }
 ])
 

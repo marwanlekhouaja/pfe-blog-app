@@ -3,11 +3,23 @@
 import "bootstrap/dist/js/bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 import { axiosClient } from "../../api/axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // eslint-disable-next-line react/prop-types
-const CommentModel = ({idBlog,idUser,comments}) => {
+const CommentModel = ({idBlog,idUser}) => {
   const [comment,setComment]=useState('')
-  console.log(comments)
+
+  // useEffect(()=>{
+  //   const fetchComments=async ()=>{
+  //     const res=await axiosClient.get(`/api/blog/${idBlog}/comments`)
+  //     if(res.status===200){
+  //       console.log(res.data)
+  //     }
+  //     else{
+  //       console.log(res.data)
+  //     }
+  //   } 
+  //   fetchComments()
+  // },[])
 
   const createComment=async ()=>{
     const res=await axiosClient.post('/api/commentaire',{user_id:idUser,blog_id:idBlog,comment})
@@ -22,7 +34,7 @@ const CommentModel = ({idBlog,idUser,comments}) => {
     return (
         <div>
             
-            <div
+            {/* <div
                 className="modal fade"
                 id="exampleModal"
                 aria-labelledby="exampleModalLabel"
@@ -38,21 +50,21 @@ const CommentModel = ({idBlog,idUser,comments}) => {
                                 aria-label="Close"
                             ></button>
                         </div>
-                        <div className="modal-body">
-                            {comments?comments.map((c)=>(
+                        <div className="modal-body"> */}
+                            {/* {comments?comments.map((c)=>(
                               <div key={c.id}>
                                 <p>{c.comment}</p>
                                 <hr />
                               </div>
-                            )):<span>no comments in this blog</span>}
+                            )):<span>no comments in this blog</span>} */}
                             <form className="d-flex">
                                 <input type="text" onChange={e=>setComment(e.target.value)} className="form-control" placeholder="enter your comment here" />
                                 <button type="button" className="btn btn-dark" data-bs-dismiss="modal" onClick={createComment}><i className="ms-1 bi bi-chat"></i></button>
                             </form>
-                        </div>
+                        {/* </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

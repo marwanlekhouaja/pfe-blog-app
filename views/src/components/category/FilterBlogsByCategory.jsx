@@ -24,7 +24,7 @@ const FilterBlogsByCategory = () => {
     filterByCategory()  
   },[])
   return (
-    <div>
+    <div className="mt-5">
       <ContentOfCategory blogs={blogs} />
     </div>
   )

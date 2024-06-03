@@ -11,7 +11,7 @@ const Profile = () => {
   useEffect(() => {
     axiosClient
         .get("/api/user")
-        .then((data) => setUser([data.data]))
+        .then((data) => setUser(data.data))
 
         user.map((u)=>setUserId(u.id))
     // if(!context.authenticated){
@@ -21,7 +21,7 @@ const Profile = () => {
   return (
     <div>
       <LayoutDashboardUser />
-      {user.length!==0?user.map((u)=>(
+      {/* {user.length!==0?user.map((u)=>(
         <div key={u.id} className="mt-5  pt-4 rounded w-50 m-auto d-flex flex-column justify-content-center align-items-center">
           <img src='/aucun_photo.png' loading="lazy" style={{borderRadius:'50%'}} alt="" />
           <h3>{u.name}</h3>
@@ -29,7 +29,7 @@ const Profile = () => {
       ))
       :
       <div style={{height:'90dvh'}} className="d-flex justify-content-center align-items-center"><span className="spinner-border"></span></div>
-    }
+    } */}
 
     <div className="d-flex align-items-center justify-content-center">
       <Link to='' className="bg-secondary text-dark text-decoration-none rounded-pill p-2 me-4">blogs</Link>

@@ -33,5 +33,5 @@ Route::apiResource('saves',SaveController::class);
 Route::get('postsuser/{id}',[BlogController::class,'getPostsUserAuthentified']);
 Route::get('blogs/{search}',[BlogController::class,'search']);
 Route::get('blogs/category/{category}',[BlogController::class,'filterBlogsByCategory']);
-
+Route::get('/blog/{idblog}/comments',[BlogController::class,'getCommentsOfSpecificBlog']);
 Route::get('list_categories',[CategoryController::class,'listCategories']);
