@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return response()->json(User::with('blogs')->get(),200);
+        return response()->json(User::with('blogs')->get(), 200);
     }
 
     /**
@@ -32,7 +32,21 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        return response()->json(User::find($id)->blogs,200);
+        // Retrieve the user along with their blogs and categories
+        $user = User::with([
+            'blogs' => function ($query) {
+                // Include blogs with their categories
+                $query->with('category');
+            }
+        ])->find($id);
+
+        // If the user is found, return only the blogs and their categories
+        if ($user) {
+            return response()->json($user->blogs, 200);
+        }
+
+        // If user not found, return a 404 response
+        return response()->json(['message' => 'User not found'], 404);
     }
 
     /**
@@ -41,31 +55,31 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
 
-        try{
-            // $request->validate([
-            //     'name'=>'required|min:3',
-            //     "email"=>'required|min:3',
-            //     "image"=>'file|mimes:png,jpg,jpeg',
-            //     'bio'=>'',
-            // ]);
-            
-            if($request->hasFile('image')){
-                $imageName=Str::random(32).".".$request->image->getClientOriginalExtension();
+        try {
+            $request->validate([
+                'name'=>'required|min:3',
+                "email"=>'required|min:3',
+                "image"=>'',
+                'bio'=>'',
+            ]);
+
+            if ($request->hasFile('image')) {
+                $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
             }
             User::find($id)->update([
-                'name'=>$request->name,
-                'email'=>$request->email,
-                'image'=>$request->hasFile('image')?$imageName:null,
-                'bio'=>$request->bio,
+                'name' => $request->name,
+                'email' => $request->email,
+                'image' => $request->hasFile('image') ? $imageName : null,
+                'bio' => $request->bio,
             ]);
-            if($request->hasFile('image')){
-                Storage::disk('public')->put($imageName,file_get_contents($request->image));
-            };
-            return response()->json(['message'=>'blog created successfully !'],200);
-           }
-           catch(\Exception $e){
-            return response()->json(['message'=>'somthing is wrong because '.$e],500);
-           }
+            if ($request->hasFile('image')) {
+                Storage::disk('public')->put($imageName, file_get_contents($request->image));
+            }
+            ;
+            return response()->json(['message' => 'blog created successfully !'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'somthing is wrong because ' . $e], 500);
+        }
     }
 
     /**

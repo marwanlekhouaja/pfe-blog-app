@@ -1,15 +1,32 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react-hooks/exhaustive-deps */
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import CommentModel from "../blog/CommentModel";
-import { toast, Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../context/AppContext";
 
-const ContentDashboard = ({ blogs, user }) => {
+const ContentDashboard = () => {
+    const { ListBlogs, user, saveBlog, unsaveBlog,deleteBlog } = useContext(AppContext);
     const [idBlog, setIdBlog] = useState(null);
-    const [savedBlog, setSavedBlog] = useState({});
+    const [savedBlogIds, setSavedBlogIds] = useState(new Set());
     const [showComments, setShowComments] = useState({});
+
+    useEffect(() => {
+        AOS.init();
+        extractSavedBlogs();
+    }, [ListBlogs]);
+
+    const extractSavedBlogs = () => {
+        const savedBlogs = new Set();
+        ListBlogs.forEach((blog) => {
+            if (blog.saves.some((save) => save.user_id === user.id)) {
+                savedBlogs.add(blog.id);
+            }
+        });
+        setSavedBlogIds(savedBlogs);
+    };
 
     const comment = (id) => {
         setShowComments((prevState) => ({
@@ -19,44 +36,65 @@ const ContentDashboard = ({ blogs, user }) => {
         setIdBlog(id);
     };
 
-    const saveBlog = (id) => {
-        setSavedBlog((prevState) => ({
-            ...prevState,
-            [id]: !prevState[id],
-        }));
-        const isSaved = savedBlog[id]; // Check if the blog is saved
-
-        toast.info(`blog ${isSaved ? "unsaved" : "saved"} successfully !`);
+    const handleSaveBlog = async (id) => {
+        if (savedBlogIds.has(id)) {
+            await unsaveBlog(id);
+            setSavedBlogIds((prevState) => {
+                const newSet = new Set(prevState);
+                newSet.delete(id);
+                toast.info("blog unsaved successfully !");
+                return newSet;
+            });
+        } else {
+            await saveBlog(id);
+            toast.info("blog saved successfully");
+            setSavedBlogIds((prevState) => new Set(prevState).add(id));
+        }
     };
-    useEffect(() => {
-        AOS.init();
-    }, []);
+
+    const removeBlog=(id)=>{
+        deleteBlog(id)
+    }
+
     return (
         <>
             <Toaster duration={1000} position="top-center" richColors />
-            {blogs.length !== 0 ? (
-                blogs.map((blog) => (
+            {ListBlogs.length !== 0 ? (
+                ListBlogs.map((blog) => (
                     <div key={blog.id} data-aos="fade-up">
                         <div
                             style={{ backgroundColor: "white" }}
                             className="rounded shadow m-2 p-2"
                         >
-                            <p className="text-secondary d-flex align-items-center">
-                                <img
-                                    src="/aucun_photo.png"
-                                    className="me-2 rounded-pill"
-                                    width={50}
-                                    height={50}
-                                    alt=""
-                                />
-                                <span>
-                                    created by {blog.user.name} at{" "}
-                                    <span> </span>
-                                    {new Date(
-                                        blog.created_at
-                                    ).toLocaleDateString()}
-                                </span>
-                            </p>
+                            <div className="text-secondary justify-content-between d-flex align-items-center">
+                                <div>
+                                    <img
+                                        src="/aucun_photo.png"
+                                        className="me-2 rounded-pill"
+                                        width={50}
+                                        height={50}
+                                        alt=""
+                                    />
+                                    <span>
+                                        created by {blog.user.name} at{" "}
+                                        {new Date(
+                                            blog.created_at
+                                        ).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="actions">
+                                    {user.id == blog.user.id && (
+                                        <button className="btn btn-danger me-2" onClick={()=>removeBlog(blog.id)}>
+                                            <i className="bi bi-trash3-fill"></i>
+                                        </button>
+                                    )}
+                                    {user.id == blog.user.id && (
+                                        <button className="btn btn-success">
+                                            <i className="bi bi-pencil-square"></i>
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                             {blog.image ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="w-75 p-2">
@@ -114,7 +152,7 @@ const ContentDashboard = ({ blogs, user }) => {
                                     </Link>
                                 </div>
                             )}
-                            <div className="actions d-flex align-items-center  justify-content-between">
+                            <div className="actions d-flex align-items-center justify-content-between">
                                 <div>
                                     <span className="bg-secondary text-light p-2 rounded-pill me-2">
                                         {blog.category.type}
@@ -127,13 +165,13 @@ const ContentDashboard = ({ blogs, user }) => {
                                     <button
                                         className="me-3"
                                         onClick={() => comment(blog.id)}
-                                        // data-bs-toggle="modal"
-                                        // data-bs-target="#exampleModal"
                                     >
                                         <i className="bi fs-4 bi-chat"></i>
                                     </button>
-                                    <button onClick={() => saveBlog(blog.id)}>
-                                        {savedBlog[blog.id] ? (
+                                    <button
+                                        onClick={() => handleSaveBlog(blog.id)}
+                                    >
+                                        {savedBlogIds.has(blog.id) ? (
                                             <i className="bi fs-4 bi-bookmark-check-fill"></i>
                                         ) : (
                                             <i className="bi fs-4 bi-bookmark"></i>
@@ -145,6 +183,7 @@ const ContentDashboard = ({ blogs, user }) => {
                                 {showComments[blog.id] && <hr />}
                                 {showComments[blog.id] && (
                                     <CommentModel
+                                        key={blog.id}
                                         idUser={user.id}
                                         idBlog={idBlog}
                                     />
@@ -155,7 +194,7 @@ const ContentDashboard = ({ blogs, user }) => {
                                             key={c.id}
                                             className="rounded-pill bg-light m-2 p-2"
                                         >
-                                            <span>{c.user_id}</span>
+                                            <span>{c.user.name}</span>
                                             <br />
                                             <span>{c.comment}</span>
                                         </div>
@@ -174,7 +213,6 @@ const ContentDashboard = ({ blogs, user }) => {
                     <span className="spinner-border"></span>
                 </div>
             )}
-            {/* <CommentModel idBlog={idBlog} comments={blogs.comments} idUser={user.id} /> */}
         </>
     );
 };

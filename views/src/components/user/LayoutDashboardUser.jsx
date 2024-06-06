@@ -108,7 +108,7 @@ const LayoutDashboardUser = () => {
                             </svg>
                             <span>Write</span>
                         </Link>
-                        <Link to={`/${user.name}/profile`}>
+                        {/* <Link to={`/${user.name}/profile`}>
                             <img
                                 style={{ borderRadius: "50%" }}
                                 src="/aucun_photo.png"
@@ -118,39 +118,51 @@ const LayoutDashboardUser = () => {
                                 className=""
                                 alt="Profile"
                             />
-                        </Link>
-                        <button onClick={logout} className="btn btn-light ms-2">
+                        </Link> */}
+                        {/* <button onClick={logout} className="btn btn-light ms-2">
                             <i className="bi bi-box-arrow-right"></i>
-                        </button>
+                        </button> */}
                         <div className="dropdown">
-                            <button
-                                className="btn btn-secondary dropdown-toggle"
+                        {/* <Link to={`/${user.name}/profile`} className="dropdown-toggle">
+                            <img
+                                style={{ borderRadius: "50%" }}
+                                src="/aucun_photo.png"
+                                loading="lazy"
+                                width={50}
+                                height={100}
+                                className=""
+                                alt="Profile"
+                            />
+                        </Link> */}
+                            <span
+                                className="dropdown-toggle"
                                 type="button"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                             >
                                 {user.name}
-                            </button>
+                            </span>
                             <ul className="dropdown-menu">
                                 <li>
-                                    <a
+                                    <Link
+                                        to={`/${user.name}/profile`}
+                                        className="dropdown-item"
+                                    >
+                                        profile
+                                    </Link>
+                                    <span
                                         className="dropdown-item"
                                         data-bs-toggle="modal"
                                         data-bs-target="#exampleModal"
                                         href="#"
                                     >
                                         edit
-                                    </a>
+                                    </span>
                                 </li>
                                 <li>
-                                    <a className="dropdown-item" href="#">
-                                        Another action
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="dropdown-item" href="#">
-                                        Something else here
-                                    </a>
+                                    <button onClick={logout} className="ms-3">
+                                        logout
+                                    </button>
                                 </li>
                             </ul>
                         </div>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Save;
 
 class Blog extends Model
 {
@@ -20,6 +21,10 @@ class Blog extends Model
 
     public function category(){
         return $this->belongsTo(Category::class,'categoryId','id'); 
+    }
+
+    public function saves(){
+        return $this->hasMany(Save::class,'blog_id');
     }
        
 }

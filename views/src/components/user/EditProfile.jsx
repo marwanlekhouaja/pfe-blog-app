@@ -8,8 +8,8 @@ import { axiosClient } from "../../api/axios";
 const schema = yup.object({
     name: yup.string().required().min(3),
     email: yup.string().email().required(),
-    image: yup.string(),
     bio: yup.string(),
+    image: yup.mixed(),
 });
 function EditProfile({ user }) {
     const {
@@ -23,22 +23,26 @@ function EditProfile({ user }) {
 
     const editData = async (data) => {
         try {
-            const res = await axiosClient.patch(`/api/users/${user.id}`, data, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const formData = new FormData();
+            // Append all fields to FormData
+            formData.append('name', data.name);
+            formData.append('email', data.email);
+            formData.append('bio', data.bio);
+            // Append the file
+            formData.append('image', data.image[0]);
+
+            // Use formData in the request
+            const res = await axiosClient.patch(`/api/users/${user.id}`, formData);
+
             if (res.status === 200) {
-                console.log("profile edited successfully !");
-                // toast.success('Blog created successfully!');
-                // setTimeout(() => {
-                //     navigate('/dashboard');
-                // }, 2300);
+                console.log("Profile edited successfully!");
+                window.location.reload();
             }
         } catch (error) {
-            console.log("Failed to store blog because " + error);
+            console.log("Failed to update profile because " + error);
         }
     };
+    
     return (
         <div>
             <div
@@ -61,7 +65,7 @@ function EditProfile({ user }) {
                             ></button>
                         </div>
                         <div className="modal-body">
-                            <form action="" onSubmit={handleSubmit(editData)}>
+                            <form action="" onSubmit={handleSubmit(editData)} encType="multipart/form-data">
                                 name
                                 <input
                                     type="text"
@@ -80,6 +84,7 @@ function EditProfile({ user }) {
                                 <input
                                     type="text"
                                     {...register("bio")}
+                                    defaultValue={user.bio?user.bio:''}
                                     placeholder="type here something about you .."
                                     className="form-control"
                                 />
@@ -100,7 +105,8 @@ function EditProfile({ user }) {
                                     <button
                                         type="submit"
                                         className="btn btn-success"
-                                    >
+                                        // data-bs-dismiss="modal"
+                                     >
                                         <i className="bi bi-pencil-square"></i>
                                     </button>
                                 </div>

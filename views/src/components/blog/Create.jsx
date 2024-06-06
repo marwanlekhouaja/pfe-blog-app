@@ -5,7 +5,8 @@ import {yupResolver} from '@hookform/resolvers/yup'
 import {toast,Toaster} from 'sonner'
 import { useNavigate } from "react-router-dom";
 import { axiosClient } from "../../api/axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../context/AppContext";
 
 const schema=yup.object({
     title:yup.string().required().min(3),
@@ -14,7 +15,7 @@ const schema=yup.object({
 })
 const Create = () => {
     const navigate=useNavigate()
-    const [user,setUser]=useState([])
+    const context=useContext(AppContext) 
     const [categories, setCategories] = useState([]);
     const {register,handleSubmit,formState:{errors,isSubmitting}}=useForm({
         mode:'onTouched',
@@ -23,7 +24,6 @@ const Create = () => {
 
 
     useEffect(()=>{
-        axiosClient.get('/api/user').then(data=>setUser(data.data))
         axiosClient.get('/api/categories')
             .then(response => setCategories(response.data))
             .catch(error => console.error('Error fetching categories:', error));
@@ -41,7 +41,7 @@ const Create = () => {
 
     const createBlog = async (data) => {
 
-        let blog={...data,image:data.image[0],creatorId:user.id} 
+        let blog={...data,image:data.image[0],creatorId:context.user.id} 
         try {
             const res = await axiosClient.post('/api/blog', blog, {
             headers: {
@@ -51,6 +51,7 @@ const Create = () => {
             if (res.status === 200) {
                 console.log(blog);
                 toast.success('Blog created successfully!');
+                context.addBlog()
                 setTimeout(() => {
                     navigate('/dashboard');
                 }, 2300);
@@ -65,7 +66,7 @@ const Create = () => {
     return (
         <div style={{height:'90vh'}} className="d-flex justify-content-center align-items-center">
             <Toaster richColors position="top-center" duration={1300} />
-            <form action="" onSubmit={handleSubmit(createBlog)} encType="multipart/form-data" className=" p-2 m-auto shadow w-50 rounded"  >
+            <form action="" onSubmit={handleSubmit(createBlog)} encType="multipart/form-data" className=" p-2 m-auto shadow col-10 col-md-6 rounded"  >
                 <h2 className="text-center font-mono">Create your own blog</h2>
                 title
                 <input className="form-control" type="text" {...register('title')} />

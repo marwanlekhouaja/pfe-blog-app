@@ -4,7 +4,8 @@ import LayoutDashboardUser from "../components/user/LayoutDashboardUser";
 import { useEffect, useState } from "react";
 import { axiosClient } from "../api/axios";
 import ContentPageSearch from "../components/search/ContentPageSearch";
-
+import AOS from "aos";
+import "aos/dist/aos.css";
 const PageSearch = () => {
     const { search } = useParams();
     const [blogs, setBlogs] = useState([]);
@@ -19,6 +20,7 @@ const PageSearch = () => {
             }
         };
         fetchBlogsOfSearch();
+        AOS.init()
     },[]);
 
     return (

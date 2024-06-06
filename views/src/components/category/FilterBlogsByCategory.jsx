@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { axiosClient } from "../../api/axios"
 import ContentOfCategory from "./ContentOfCategory"
-
+import AOS from "aos";
+import "aos/dist/aos.css";
 const FilterBlogsByCategory = () => {
   const [blogs,setBlogs]=useState([])
   const {name}=useParams()
@@ -22,6 +23,7 @@ const FilterBlogsByCategory = () => {
     }
     }  
     filterByCategory()  
+    AOS.init()
   },[])
   return (
     <div className="mt-5">

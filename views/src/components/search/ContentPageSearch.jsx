@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
+import { Link } from "react-router-dom";
+
 const ContentPageSearch = ({ blogs }) => {
     return (
         <>
             {blogs.length !== 0 ? (
                 blogs.map((blog) => (
-                    <div key={blog.id}>
+                    <div key={blog.id} data-aos="fade-up">
                         <div className="rounded m-2 p-2">
                             <p className="text-secondary d-flex align-items-center">
                                 <img
@@ -36,15 +38,22 @@ const ContentPageSearch = ({ blogs }) => {
                                         </p>
                                     </div>
                                     <div>
-                                        <img
-                                            style={{
-                                                height: "200px",
-                                                width: "200px",
-                                            }}
-                                            loading="lazy"
-                                            src={`http://localhost:8000/storage/${blog.image}`}
-                                            className="rounded"
-                                        />
+                                        <Link
+                                            to={`/blog/${blog.title.replaceAll(
+                                                " ",
+                                                "_"
+                                            )}`}
+                                        >
+                                            <img
+                                                style={{
+                                                    height: "200px",
+                                                    width: "200px",
+                                                }}
+                                                loading="lazy"
+                                                src={`http://localhost:8000/storage/${blog.image}`}
+                                                className="rounded"
+                                            />
+                                        </Link>
                                     </div>
                                 </div>
                             ) : (
@@ -72,9 +81,9 @@ const ContentPageSearch = ({ blogs }) => {
                     </div>
                 ))
             ) : (
-                <div className="text-center mt-4">
+                <h1 className="text-center mt-4">
                     blogs not found in this topic !
-                </div>
+                </h1>
             )}
         </>
     );

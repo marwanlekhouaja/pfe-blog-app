@@ -16,7 +16,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return response()->json(Blog::with('user')->with('comments')->with('category')->latest()->get(),200);
+        return response()->json(Blog::with(['user','comments.user','category','saves'])->latest()->get(),200);
     }
 
     /**
@@ -58,7 +58,7 @@ class BlogController extends Controller
      */
     public function show(string $name)
     {
-        return response()->json(Blog::with('user')->with('comments')->where('title',$name)->get(),200); 
+        return response()->json(Blog::with(['user', 'comments.user'])->with('comments')->where('title',$name)->get(),200); 
     }
 
     /**
@@ -66,15 +66,49 @@ class BlogController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-    }
+        try{
+            $request->validate([
+                'title'=>'required|min:3',
+                "body"=>'required|min:3',
+                "image"=>'file|mimes:png,jpg,jpeg',
+                'creatorId'=>'required',
+                'categoryId'=>'required'
+            ]);
+            
+            if($request->hasFile('image')){
+                $imageName=Str::random(32).".".$request->image->getClientOriginalExtension();
+            }
+            Blog::find($id)->update([
+                'title'=>$request->title,
+                'body'=>$request->body,
+                'image'=>$request->hasFile('image')?$imageName:null,
+                'creatorId'=>$request->creatorId,
+                'categoryId'=>$request->categoryId
+            ]);
+            if($request->hasFile('image')){
+                Storage::disk('public')->put($imageName,file_get_contents($request->image));
+            };
+            return response()->json(['message'=>'blog updated successfully !'],200);
+           }
+           catch(\Exception $e){
+            return response()->json(['message'=>'somthing is wrong because '.$e],500);
+           }
+        }
+    
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        try{
+            Blog::destroy($id);
+            return response()->json(['message'=>'blog deleted successfully !'],200);
+        }
+        catch(\Exception $e){
+            return response()->json(['message'=> 'failed to delete the blog because '.$e],500);
+        }
+
     }
 
     public function getPostsUserAuthentified(Request $request){

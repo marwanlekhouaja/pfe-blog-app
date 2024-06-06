@@ -29,10 +29,6 @@ class SaveController extends Controller
                 $imageName=Str::random(32).".".$request->image->getClientOriginalExtension();
             }
             Save::create([
-                'title' => $request->title,
-                'body' => $request->body,
-                'image' => $request->hasFile('image')?$imageName:null,
-                'categoryId' => $request->categoryId,
                 'user_id' => $request->user_id,
                 'blog_id' => $request->blog_id,
                 
@@ -69,6 +65,12 @@ class SaveController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try{
+            Save::where('blog_id',$id)->delete();
+            return response()->json(['message'=> 'saved successfully !'],200);
+        }
+        catch(Exception $e){
+            return response()->json('error server',500);
+        }
     }
 }

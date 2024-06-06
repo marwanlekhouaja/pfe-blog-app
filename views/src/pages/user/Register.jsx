@@ -27,7 +27,6 @@ const Register = () => {
 
     const createAccount = async (data) => {
         try {
-            // await axiosClient.get("/sanctum/csrf-cookie");
             if(data.password_confirmation == data.password){
                 const res = await axiosClient.post("/register", data);
                 if (res.status === 204) {

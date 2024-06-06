@@ -1,44 +1,61 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {  useEffect, useState } from "react";
+import {  useEffect,  useState } from "react";
 import { axiosClient } from "../../api/axios";
-import { Link } from "react-router-dom";
 import LayoutDashboardUser from "./LayoutDashboardUser";
-import PostsUser from "./PostsUser";
+import PostsUser from './BlogsUser' 
 
 const Profile = () => {
-  const [user,setUser]=useState([])
-  const [userId,setUserId]=useState(null)
-  useEffect(() => {
-    axiosClient
-        .get("/api/user")
-        .then((data) => setUser(data.data))
+    const [user, setUser] = useState([]);
+    const [blogs, setBlogs] = useState([]);
 
-        user.map((u)=>setUserId(u.id))
-    // if(!context.authenticated){
-    //   navigate('/')
-    // }
-}, []);
-  return (
-    <div>
-      <LayoutDashboardUser />
-      {/* {user.length!==0?user.map((u)=>(
-        <div key={u.id} className="mt-5  pt-4 rounded w-50 m-auto d-flex flex-column justify-content-center align-items-center">
-          <img src='/aucun_photo.png' loading="lazy" style={{borderRadius:'50%'}} alt="" />
-          <h3>{u.name}</h3>
+    useEffect(() => {
+        const fetchDataUser = async () => {
+            const res = await axiosClient.get("/api/user");
+            setUser(res.data);
+        };
+        fetchDataUser();
+
+        const fetchPostsUser = async () => {
+            try {
+                const data = await axiosClient.get("/api/user");
+                const res = await axiosClient.get(`api/users/${data.data.id}`);
+                if (res.status == 200) {
+                    setBlogs(res.data);
+                }
+            } catch (error) {
+                console.log("error fetching posts of this user ! because "+error);
+            }
+        };
+        fetchPostsUser();
+    }, []);
+    return (
+        <div>
+            <LayoutDashboardUser />
+            {user.length !== 0 ? (
+                <div className="mt-5 shadow  bg-light pt-4 rounded col-10 col-md-8 m-auto d-flex flex-column justify-content-center align-items-center">
+                    <img
+                        src="/aucun_photo.png"
+                        loading="lazy"
+                        style={{ borderRadius: "50%" }}
+                        alt=""
+                    />
+                    <h3>{user.name}</h3>
+                    <div>{user.bio?<div className="d-flex justify-content-center flex-column align-items-center"><h4 className="text-center mt-4 ">Bio </h4><br/><p style={{fontFamily:'monospace'}} className="text-center w-75 p-2">{user.bio}</p></div>:<span>no bio ...</span>}</div>
+                </div>
+            ) : (
+                <div
+                    style={{ height: "90dvh" }}
+                    className="d-flex justify-content-center align-items-center"
+                >
+                    <span className="spinner-border"></span>
+                </div>
+            )}
+
+            
+            <hr />
+            <PostsUser blogs={blogs} />
         </div>
-      ))
-      :
-      <div style={{height:'90dvh'}} className="d-flex justify-content-center align-items-center"><span className="spinner-border"></span></div>
-    } */}
+    );
+};
 
-    <div className="d-flex align-items-center justify-content-center">
-      <Link to='' className="bg-secondary text-dark text-decoration-none rounded-pill p-2 me-4">blogs</Link>
-      <Link to='' className="bg-secondary text-dark text-decoration-none rounded-pill p-2">saved</Link>
-    </div>
-    <hr />
-    <PostsUser user={user} idUser={userId} />
-    </div>
-  )
-}
-
-export default Profile
+export default Profile;
