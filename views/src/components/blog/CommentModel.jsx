@@ -9,7 +9,7 @@ const CommentModel = ({ idBlog, idUser }) => {
     const [comment, setComment] = useState("");
     const context=useContext(AppContext)
     const createComment = async () => {
-        context.addComment(idUser,idBlog,comment)
+        context.addComment(context.user.id,idBlog,comment)
     };
     return (
         <div>

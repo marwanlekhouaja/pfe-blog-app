@@ -1,41 +1,48 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../context/AppContext";
 
-const BlogsUser = ({ blogs }) => {
+const BlogsSavesUser = ({ saves }) => {
+    const {unsaveBlog}=useContext(AppContext)
+
+    const removeSaveBlog=(id)=>{
+        unsaveBlog(id)
+    }
     return (
         <>
             <div className="d-flex flex-column justify-content-center m-auto align-items-center">
-            {blogs? (
-                blogs.map((blog) => (
-                    <div key={blog.id} className="col-10 col-md-8">
+            {saves ? (
+                saves.map((save) => (
+                    <div key={save.id} className="col-10 col-md-8">
                         <div
                             style={{ backgroundColor: "white" }}
                             className="rounded shadow m-2 p-2"
                         >
-                            {blog.image ? (
+                            {save.blog.image ? (
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="w-75 p-2">
                                         <Link
                                             className="text-decoration-none text-dark"
-                                            to={`/blog/${blog.title.replaceAll(
+                                            to={`/blog/${save.blog.title.replaceAll(
                                                 " ",
                                                 "_"
                                             )}`}
                                         >
-                                            <h4>{blog.title}</h4>
+                                            <h4>{save.blog.title}</h4>
                                             <p>
-                                                {blog.body.length > 200
-                                                    ? blog.body.slice(0, 200) +
+                                                {save.blog.body.length > 200
+                                                    ? save.blog.body.slice(0, 200) +
                                                       "..."
-                                                    : blog.body}
+                                                    : save.blog.body}
                                             </p>
                                         </Link>
                                     </div>
                                     <div>
                                         <Link
-                                            to={`/blog/${blog.title.replaceAll(
+                                            to={`/blog/${save.blog.title.replaceAll(
                                                 " ",
                                                 "_"
                                             )}`}
@@ -46,7 +53,7 @@ const BlogsUser = ({ blogs }) => {
                                                     width: "200px",
                                                 }}
                                                 loading="lazy"
-                                                src={`http://localhost:8000/storage/${blog.image}`}
+                                                src={`http://localhost:8000/storage/${save.blog.image}`}
                                                 className="rounded"
                                             />
                                         </Link>
@@ -56,17 +63,17 @@ const BlogsUser = ({ blogs }) => {
                                 <div>
                                     <Link
                                         className="text-decoration-none text-dark"
-                                        to={`/blog/${blog.title.replaceAll(
+                                        to={`/blog/${save.blog.title.replaceAll(
                                             " ",
                                             "_"
                                         )}`}
                                     >
-                                        <h4>{blog.title}</h4>
+                                        <h4>{save.blog.title}</h4>
                                         <p>
-                                            {blog.body.length > 200
-                                                ? blog.body.slice(0, 200) +
+                                            {save.blog.body.length > 200
+                                                ? save.blog.body.slice(0, 200) +
                                                   "..."
-                                                : blog.body}
+                                                : save.blog.body}
                                         </p>
                                     </Link>
                                 </div>
@@ -74,13 +81,17 @@ const BlogsUser = ({ blogs }) => {
                             <div className="actions d-flex align-items-center mb-2 justify-content-between">
                                 <div>
                                     <span className="bg-secondary text-light p-2 rounded-pill me-2">
-                                        {blog.category.type}
+                                        {save.blog.category.type}
                                     </span>
                                     <span className="bg-secondary text-light p-2 rounded-pill">
-                                        {blog.category.name}
+                                        {save.blog.category.name}
                                     </span>
                                 </div>
-                               
+                                <div>
+                                    <button onClick={()=>removeSaveBlog(save.id)}>
+                                        <i className="bi fs-4 bi-bookmark-check-fill"></i>
+                                    </button>
+                                </div>
                             </div>
                             
                         </div>
@@ -90,8 +101,8 @@ const BlogsUser = ({ blogs }) => {
                 ))
             ) : (
                 <div
-                    // style={{ height: "90dvh" }}
-                    className="d-flex mt-4 justify-content-center align-items-center"
+                    style={{ height: "90dvh" }}
+                    className="d-flex justify-content-center align-items-center"
                 >
                     <div>no blogs exists</div>
                 </div>
@@ -101,4 +112,4 @@ const BlogsUser = ({ blogs }) => {
     );
 };
 
-export default BlogsUser;
+export default BlogsSavesUser;

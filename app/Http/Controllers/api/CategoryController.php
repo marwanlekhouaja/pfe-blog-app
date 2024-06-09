@@ -41,7 +41,15 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try{
+            Category::find($id)->update([
+                'name'=>$request->name,
+                'type'=>$request->type
+            ]);
+        }
+        catch(\Exception $exception){
+            return response()->json(['message'=>'failed to update the category because '.$exception],500);
+        } 
     }
 
     /**
@@ -49,6 +57,11 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try{
+            Category::find($id)->delete();
+        }
+        catch(\Exception $exception){
+            return response()->json(['message'=>'failed to delete the category because '.$exception],500);
+        }
     }
 }

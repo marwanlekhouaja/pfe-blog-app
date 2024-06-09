@@ -49,9 +49,8 @@ const Create = () => {
                 }
             });
             if (res.status === 200) {
-                console.log(blog);
+                axiosClient.get("/api/blog").then((data) => context.addBlog(data.data));
                 toast.success('Blog created successfully!');
-                context.addBlog()
                 setTimeout(() => {
                     navigate('/dashboard');
                 }, 2300);

@@ -1,92 +1,68 @@
-import { useContext, useEffect, useState } from "react"
-import { axiosClient } from "../../api/axios"
-import { AppContext } from "../../context/AppContext"
+import TableBlogs from "../../components/admin/TableBlogs";
+import TableUsers from "../../components/admin/TableUsers";
+import TableCategories from "../../components/admin/TableCategories";
+import { useContext, useState } from "react";
+import TableComments from "../../components/admin/TableComments";
+import { AppContextAdmin } from "../../context/AppContextAdmin";
 
 const DashboardAdmin = () => {
-  const [users,setUsers]=useState([])
-  const {ListBlogs}=useContext(AppContext)
-  const {listCategories}=useContext(AppContext)
 
-  useEffect(()=>{
-    axiosClient.get('/api/users')
-    .then(data=>setUsers(data.data))
-    .catch(error=>console.log(error))
+    const [showListCategories,setShowListCategories]=useState(false)
+    const [showListUsers,setShowListUsers]=useState(false)
+    const [showListBlogs,setShowListBlogs]=useState(true)
+    const [showListComments,setShowListComments]=useState(false)
 
-  },[])
-  return (
-    <div>
-      <table className="table table-light shadow-sm mt-3 container text-center">
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>name</th>
-            <th>email</th>
-            <th>image</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.length!==0?users.map((user)=>(
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.image?user.image:'null'}</td>
-              <td>
-                <button className="btn btn-danger"><i className="bi bi-trash3-fill"></i></button><button className="btn btn-success ms-2"><i className="bi bi-pencil-square"></i></button>
-              </td>
-            </tr>
-          )):<tr><td colSpan={7}>no users found !</td></tr>}
-        </tbody>
-      </table>
-      <table className="table table-light shadow-sm mt-3 container text-center">
-        <thead>
-          <tr>
-            <th>title</th>
-            <th>description</th>
-            <th>image</th>
-            <th>category</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ListBlogs.length!==0?ListBlogs.map((blog)=>(
-            <tr key={blog.id}>
-              <td>{blog.title.length>20?blog.title.slice(0,20)+'...':blog.title}</td>
-              <td>{blog.body.length>50?blog.body.slice(0,50)+'...':blog.body}</td>
-              <td>{blog.image?<img width={60} src={`http://localhost:8000/storage/${blog.image}`} />:'null'}</td>
-              <td>{blog.category.type}</td>
-              <td>
-                <button className="btn btn-danger"><i className="bi bi-trash3-fill"></i></button><button className="btn btn-success ms-2"><i className="bi bi-pencil-square"></i></button>
-              </td>
-            </tr>
-          )):<tr><td colSpan={7}>no blogs found !</td></tr>}
-        </tbody>
-      </table>
-      <table className="table table-light shadow-sm mt-3 container text-center">
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>name</th>
-            <th>type</th>
-            <th>actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {listCategories.length!==0?listCategories.map((category)=>(
-            <tr key={category.id}>
-              <td>{category.id}</td>
-              <td>{category.name}</td>
-              <td>{category.type}</td>
-              <td>
-                <button className="btn btn-danger"><i className="bi bi-trash3-fill"></i></button><button className="btn btn-success ms-2"><i className="bi bi-pencil-square"></i></button>
-              </td>
-            </tr>
-          )):<tr><td colSpan={7}>no categories found !</td></tr>}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+    const context=useContext(AppContextAdmin)
+    console.log(context)
 
-export default DashboardAdmin
+    const handleShowBlogs=()=>{
+        setShowListBlogs(true)
+        setShowListCategories(false)
+        setShowListUsers(false)
+        setShowListComments(false)
+    }
+
+    const handleShowUsers=()=>{
+        setShowListBlogs(false)
+        setShowListCategories(false)
+        setShowListUsers(true)
+        setShowListComments(false)
+    }
+
+    const handleShowCategories=()=>{
+        setShowListBlogs(false)
+        setShowListCategories(true)
+        setShowListUsers(false)
+        setShowListComments(false)
+    }
+
+    const handleShowComments=()=>{
+        setShowListBlogs(false)
+        setShowListCategories(false)
+        setShowListUsers(false)
+        setShowListComments(true)
+    }
+
+   
+    return (
+        <div className="d-flex">
+            <div
+                style={{ minHeight: "100dvh" }}
+                className="sideBar bg-dark text-light col-2 p-3"
+            >
+                <div onClick={handleShowBlogs}><button className="btn btn-light m-1">Table Blogs</button></div>
+                <div onClick={handleShowCategories}><button className="btn btn-light m-1">Table Categories</button></div>
+                <div onClick={handleShowUsers}><button className="btn btn-light m-1">Table Users</button></div>
+                <div onClick={handleShowComments}><button className="btn btn-light m-1">Table Comments</button></div>
+            </div>
+            <div className="tables col-10 container">
+                {showListBlogs&&<TableBlogs/>}
+                {showListUsers&&<TableUsers />}
+                {showListCategories&&<TableCategories />} 
+                {showListComments&&<TableComments />}               
+            </div>
+        </div>
+    );
+};
+
+export default DashboardAdmin;

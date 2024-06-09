@@ -9,7 +9,6 @@ const schema = yup.object({
     name: yup.string().required().min(3),
     email: yup.string().email().required(),
     bio: yup.string(),
-    image: yup.mixed(),
 });
 function EditProfile({ user }) {
     const {
@@ -24,15 +23,16 @@ function EditProfile({ user }) {
     const editData = async (data) => {
         try {
             const formData = new FormData();
-            // Append all fields to FormData
             formData.append('name', data.name);
             formData.append('email', data.email);
             formData.append('bio', data.bio);
-            // Append the file
-            formData.append('image', data.image[0]);
 
-            // Use formData in the request
-            const res = await axiosClient.patch(`/api/users/${user.id}`, formData);
+            // Check if an image file is provided and append it to the formData
+            if (data.image && data.image[0]) {
+                formData.append('image', data.image[0]);
+            }
+
+            const res = await axiosClient.patch(`/api/users/${user.id}`, data);
 
             if (res.status === 200) {
                 console.log("Profile edited successfully!");
@@ -65,7 +65,7 @@ function EditProfile({ user }) {
                             ></button>
                         </div>
                         <div className="modal-body">
-                            <form action="" onSubmit={handleSubmit(editData)} encType="multipart/form-data">
+                            <form action="" onSubmit={handleSubmit(editData)} >
                                 name
                                 <input
                                     type="text"

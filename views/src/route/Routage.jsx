@@ -1,6 +1,5 @@
 import {RouterProvider, createBrowserRouter} from 'react-router-dom'
 import Create from '../components/blog/Create'
-import Profile from '../components/user/Profile'
 import DashboardAdmin from '../pages/admin/DashboardAdmin'
 import Login from '../pages/user/Login'
 import NotFound from '../pages/NotFound'
@@ -9,6 +8,7 @@ import SearchPost from '../pages/PageSearch'
 import Dashboard from '../pages/user/Dashboard'
 import FilterBlogsByCategory from '../components/category/FilterBlogsByCategory'
 import DetailBlog from '../components/blog/DetailBlog'
+import Profile from '../pages/user/Profile'
 const route=createBrowserRouter([
     {
         path:'/dashboard',

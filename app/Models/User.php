@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Save;
 
 class User extends Authenticatable
 {
@@ -47,5 +48,8 @@ class User extends Authenticatable
 
     public function blogs(){
         return $this->hasMany(Blog::class,'creatorId','id');
+    }
+    public function saves(){
+        return $this->hasMany(Save::class,'user_id','id'); 
     }
 }

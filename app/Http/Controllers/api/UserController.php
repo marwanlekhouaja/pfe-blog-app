@@ -32,55 +32,69 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        // Retrieve the user along with their blogs and categories
+        // Retrieve the user along with their blogs and saved blogs
         $user = User::with([
-            'blogs' => function ($query) {
-                // Include blogs with their categories
-                $query->with('category');
-            }
+            'blogs.category', // Include blogs with their categories
+            'saves.blog.category' // Include saved blogs with their categories
         ])->find($id);
-
-        // If the user is found, return only the blogs and their categories
+    
+        // If the user is found, return only the blogs and saves columns
         if ($user) {
-            return response()->json($user->blogs, 200);
+            return response()->json([
+                'blogs' => $user->blogs,
+                'saves' => $user->saves
+            ], 200);
         }
-
+    
         // If user not found, return a 404 response
         return response()->json(['message' => 'User not found'], 404);
     }
+    
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
+{
+    try {
+        // Validate the request
+        $validated = $request->validate([
+            'name' => 'required|min:3',
+            'email' => 'required|email|min:3',
+            "image"=>'file|mimes:png,jpg,jpeg',
+            'bio' => 'nullable|string',
+        ]);
 
-        try {
-            $request->validate([
-                'name'=>'required|min:3',
-                "email"=>'required|min:3',
-                "image"=>'',
-                'bio'=>'',
-            ]);
+        // Find the user
+        $user = User::find($id);
 
-            if ($request->hasFile('image')) {
-                $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
-            }
-            User::find($id)->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'image' => $request->hasFile('image') ? $imageName : null,
-                'bio' => $request->bio,
-            ]);
-            if ($request->hasFile('image')) {
-                Storage::disk('public')->put($imageName, file_get_contents($request->image));
-            }
-            ;
-            return response()->json(['message' => 'blog created successfully !'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'somthing is wrong because ' . $e], 500);
-        }
+        // // Handle image upload if present
+        $imageName = $user->image; // Default to existing image
+        if ($request->hasFile('image')) {
+            $imageFile = $request->file('image');
+            $imageName = Str::random(32) . '.' . $imageFile->getClientOriginalExtension();
+       }
+
+        // Update the user
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'image' => $request->hasFile('image')?$imageName:$user->image,
+            'bio' => $validated['bio'] ?? $user->bio,
+        ]);
+
+        if($request->hasFile('image')){
+            Storage::disk('public')->put($imageName,file_get_contents($request->image));
+        };
+
+        return response()->json(['message' => 'User updated successfully!','user'=>$user], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Something went wrong: ' . $e->getMessage()], 500);
     }
+}
+
+
 
     /**
      * Remove the specified resource from storage.

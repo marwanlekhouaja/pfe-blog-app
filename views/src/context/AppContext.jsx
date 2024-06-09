@@ -2,17 +2,21 @@ import { createContext, useEffect, useState } from "react";
 import Routage from "../route/Routage";
 import { axiosClient } from "../api/axios";
 import { toast } from "sonner";
-
-export const AppContext = createContext({ ListBlogs: [], user: {}, addComment: () => {}, addBlog: () => {}, saveBlog: () => {}, unsaveBlog: () => {},listCategories:[] ,deleteBlog:()=>{}});
+import AOS from 'aos' 
+export const AppContext = createContext({ ListBlogs: [],listComments:[],users:[] ,user: {},removeCategory:()=>{},editCategory:()=>{}, dataUser:[],addComment: () => {}, addBlog: () => {}, saveBlog: () => {}, unsaveBlog: () => {},listCategories:[] ,deleteBlog:()=>{}});
 
 const Context = () => {
     const [blogs, setBlogs] = useState([]);
     const [user, setUser] = useState({});
     const [listCategories,setListCategories]=useState([])
+    const [dataUser,setDataUser]=useState([])
+    const [users,setUsers]=useState([])
+    const [listComments,setListComments]=useState([])
 
     useEffect(() => {
 
         // fetch user data
+        AOS.init()
         const fetchDataUser = async () => {
             const res = await axiosClient.get("/api/user");
             if (res.status !== 401) {
@@ -20,6 +24,37 @@ const Context = () => {
             }
         };
         fetchDataUser();
+
+        const fetchListUsers=async ()=>{
+            const res=await axiosClient.get('/api/users')
+            if(res.status===200){
+                setUsers(res.data)
+            }
+        }
+        fetchListUsers()
+
+        const fetchListComments=async ()=>{
+            const res=await axiosClient.get('/api/commentaire')
+            if(res.status===200){
+                setListComments(res.data)
+            }
+        }
+        fetchListComments()
+
+        const fetchPostsAndSavesUser = async () => {
+            try {
+                const data = await axiosClient.get("/api/user");
+                const res = await axiosClient.get(`api/users/${data.data.id}`);
+                if (res.status == 200) {
+                    setDataUser(res.data);
+                }
+            } catch (error) {
+                console.log(
+                    "error fetching posts of this user ! because " + error
+                );
+            }
+        };
+        fetchPostsAndSavesUser();
 
         // fetch list blogs
         axiosClient.get("/api/blog").then((data) => setBlogs(data.data));
@@ -80,17 +115,9 @@ const Context = () => {
         }
     };
 
-    const addBlog = async (blog) => {
+    const addBlog = async (listBlogs) => {
         try {
-            const res = await axiosClient.post('/api/blog', blog, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            if (res.status === 200) {
-                toast.success('Blog created successfully!');
-                axiosClient.get("/api/blog").then((data) => setBlogs(data.data));
-            }
+            setBlogs(listBlogs);
         } catch (error) {
             console.log('Failed to store blog because ' + error);
         }
@@ -147,9 +174,44 @@ const Context = () => {
         }
     };
 
+    // crud operation of category
+    const removeCategory = async (idCategory) => {
+        try {
+            const res = await axiosClient.delete(`/api/commentaire/${idCategory}`);
+            if (res.status === 200) {
+                // Fetch the updated categories list after deletion
+                const updatedResponse = listCategories.filter(category=>category.id!=idCategory);
+                setListCategories(updatedResponse);
+                toast.info('Category deleted successfully!');
+            }
+        } catch (error) {
+            console.log("Failed to delete category:", error);
+            toast.error('Failed to delete category');
+        }
+    };
+
+    const editCategory = async (category) => {
+        try {
+            const res = await axiosClient.patch(`/api/commentaire/${category.id}`, category);
+            if (res.status === 200) {
+                const updatedResponse =listCategories.map(c=>{
+                    if(c.id==category.id){
+                        return {...c,name:category.name,type:category.type}
+                    }
+                    return c
+                })
+                setListCategories(updatedResponse);
+                toast.success('Category edited successfully!');
+            }
+        } catch (error) {
+            console.log("Failed to edit category:", error);
+            toast.error('Failed to edit category');
+        }
+    };
+
 
     return (
-        <AppContext.Provider value={{ ListBlogs: blogs, user, addComment, detailBlog, addBlog, saveBlog, unsaveBlog,listCategories ,deleteBlog}}>
+        <AppContext.Provider value={{ ListBlogs: blogs, user,editCategory,removeCategory, addComment,listComments, detailBlog,users, addBlog, saveBlog,dataUser, unsaveBlog,listCategories ,deleteBlog}}>
             <Routage />
         </AppContext.Provider>
     );

@@ -156,7 +156,7 @@ const LayoutDashboardUser = () => {
                                         data-bs-target="#exampleModal"
                                         href="#"
                                     >
-                                        edit
+                                        edit profile
                                     </span>
                                 </li>
                                 <li>

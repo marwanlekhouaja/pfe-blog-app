@@ -16,7 +16,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return response()->json(Blog::with(['user','comments.user','category','saves'])->latest()->get(),200);
+        return response()->json(Blog::with(['user','comments.user','category','saves'])->withCount('comments')->latest()->get(),200);
     }
 
     /**
